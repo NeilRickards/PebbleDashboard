@@ -1,6 +1,11 @@
 {
-    "appKeys": {},
+    "appKeys": {
+        "KEY_PIN0_TEXT": 1,
+        "KEY_PIN0_TIME": 0,
+        "KEY_TRAIN_TEXT": 2
+    },
     "capabilities": [
+        "location",
         "health"
     ],
     "companyName": "neilrickards@gmail.com",

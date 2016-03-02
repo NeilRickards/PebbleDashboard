@@ -4,6 +4,12 @@
 #include "health.h"
 #include "train.h"
 
+enum {
+  KEY_PIN0_TIME = 0,
+  KEY_PIN0_TEXT,
+  KEY_TRAIN_TEXT
+};
+
 static Window* s_main_window;
 
 static void main_window_load(Window* window) {
@@ -21,9 +27,26 @@ static void main_window_unload(Window* window) {
   destroy_train_layers();
 }
 
+static void send_int(uint8_t key, uint8_t cmd) {
+    DictionaryIterator* iter;
+    app_message_outbox_begin(&iter);
+ 
+    Tuplet value = TupletInteger(key, cmd);
+    dict_write_tuplet(iter, &value);
+ 
+    app_message_outbox_send();
+}
+
 void update_layers(struct tm* tick_time, TimeUnits units_changed) {
   update_times_layers(tick_time);
-  update_train_layers(tick_time);
+
+  if (tick_time->tm_min % 10 == 0)
+    send_int(1, 1);  // send arbitrary message
+}
+
+static void inbox_received_callback(DictionaryIterator* iterator, void* context) {
+  Tuple* train_tuple = dict_find(iterator, KEY_TRAIN_TEXT);
+  update_train_layers(train_tuple->value->cstring);
 }
 
 static void init() {
@@ -40,9 +63,13 @@ static void init() {
   // Subscribe to updates
   tick_timer_service_subscribe(MINUTE_UNIT, update_layers);
   health_service_events_subscribe(update_health_layers, NULL);
+  app_message_register_inbox_received(inbox_received_callback);
+  app_message_open(128, 128);
 }
 
 static void deinit() {
+  tick_timer_service_unsubscribe();
+  health_service_events_unsubscribe();
   window_destroy(s_main_window);
 }
 
