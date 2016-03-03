@@ -1,5 +1,26 @@
+function getTrains() {
+  var xhr = new XMLHttpRequest();
+  xhr.onload = function () {
+    console.log(this.responseText);
+  };
+  xhr.open('POST', 'http://www.webservicex.net/stockquote.asmx?op=GetQuote');
+  xhr.setRequestHeader("SOAPAction", "http://www.webserviceX.NET/GetQuote");
+  xhr.setRequestHeader("Content-Type", "text/xml");
+  var xml = '<?xml version="1.0" encoding="utf-8"?>' +
+   '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
+                  'xmlns:xsd="http://www.w3.org/2001/XMLSchema" ' +
+                  'xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + 
+     '<soap:Body> ' +
+       '<GetQuote xmlns="http://www.webserviceX.NET/"> ' +
+         '<symbol>MSFT</symbol> ' +
+       '</GetQuote> ' +
+     '</soap:Body> ' +
+   '</soap:Envelope>';
+  xhr.send(xml);
+}
+
 function gotLocation(pos) {
-//  console.log('{' + pos.coords.longitude + ',' + pos.coords.latitude + '}');
+  getTrains();
   var message = {};
   if (pos.coords.latitude > 51.79) {  // Home
     message.KEY_TRAIN_TEXT = 'Home';
