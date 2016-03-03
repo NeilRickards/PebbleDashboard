@@ -1,1 +1,1 @@
-var API_KEY = '';
+var API_KEY = 'foo';
