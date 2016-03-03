@@ -21,6 +21,9 @@ static void main_window_load(Window* window) {
 }
 
 static void main_window_unload(Window* window) {
+  tick_timer_service_unsubscribe();
+  health_service_events_unsubscribe();
+  
   destroy_battery_layers();
   destroy_times_layers();
   destroy_health_layers();
@@ -28,13 +31,13 @@ static void main_window_unload(Window* window) {
 }
 
 static void send_int(uint8_t key, uint8_t cmd) {
-    DictionaryIterator* iter;
-    app_message_outbox_begin(&iter);
- 
-    Tuplet value = TupletInteger(key, cmd);
-    dict_write_tuplet(iter, &value);
- 
-    app_message_outbox_send();
+  DictionaryIterator* iter;
+  app_message_outbox_begin(&iter);
+
+  Tuplet value = TupletInteger(key, cmd);
+  dict_write_tuplet(iter, &value);
+
+  app_message_outbox_send();
 }
 
 void update_layers(struct tm* tick_time, TimeUnits units_changed) {
@@ -68,8 +71,6 @@ static void init() {
 }
 
 static void deinit() {
-  tick_timer_service_unsubscribe();
-  health_service_events_unsubscribe();
   window_destroy(s_main_window);
 }
 
