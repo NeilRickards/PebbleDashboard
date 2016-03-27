@@ -4,7 +4,7 @@
 
 #define NUM_INTL 3
 // TODO: daylight savings
-int s_intl_offsets[] = { -8, -5, 8 };  // Offsets from GMT
+int s_intl_offsets[] = { -7, -4, 8 };  // Offsets from GMT
 
 static TextLayer* s_time_layer;
 static TextLayer* s_date_layer;
