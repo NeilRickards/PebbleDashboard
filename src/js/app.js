@@ -1,31 +1,48 @@
+/*
+Pebble uses https://github.com/phoboslab/Ejecta and appears to not support:
+  XMLHttpRequest.responseXML
+  new RegExp(string)
+  new DOMParser()
+  /regex/g.exec
+*/
+
 var MINUTE = 60000;
 
 function sendTrainTimes(from, soap) {
+  var serviceToText = function(service) {
+    var getTime = function(re, strLen) {
+      var match = re.exec(service);
+      if (!match) return '??';
+      if (match[2] == 'On time') return match[1].slice(-strLen);
+      return match[2].slice(-strLen);
+    };
+    var old = getTime(/<lt4:crs>OLD<[^<]+<lt4:st>([^<]+)<[^<]+<lt4:et>([^<]+)</, 2);
+    var hhy = getTime(/<lt4:crs>HHY<[^<]+<lt4:st>([^<]+)<[^<]+<lt4:et>([^<]+)</, 2);
+    var fpk = getTime(/<lt4:crs>FPK<[^<]+<lt4:st>([^<]+)<[^<]+<lt4:et>([^<]+)</, 5);
+    if (from == 'HFN') {
+      var hfn = getTime(/<lt4:std>([^<]+)<[^<]+<lt4:etd>([^<]+)</, 5);
+      var mor = getTime(/<lt4:crs>MOG<[^<]+<lt4:st>([^<]+)<[^<]+<lt4:et>([^<]+)</, 2);
+      return [hfn,fpk,hhy,old,mor].join(' ');
+    } else {
+      var mog = getTime(/<lt4:std>([^<]+)<[^<]+<lt4:etd>([^<]+)</, 5);
+      var hfn = getTime(/<lt4:crs>HFN<[^<]+<lt4:st>([^<]+)<[^<]+<lt4:et>([^<]+)</, 5);
+      return [mog,old,hhy,fpk,hfn].join(' ');
+    }
+  };
+    
   var message = {};
 
-  var getTime = function(re) {
-    var match = re.exec(soap);
-    return match == null ? '??' : match[1];
-  }
-  var depart = getTime(/<lt4:std>([^<]+)</);
-  var old = getTime(/<lt4:crs>OLD<[^<]+<lt4:st>\d+:([^<]+)</);
-  var hhy = getTime(/<lt4:crs>HHY<[^<]+<lt4:st>\d+:([^<]+)</m);
-  var fpk = getTime(/<lt4:crs>FPK<[^<]+<lt4:st>([^<]+)</m);
-  if (from == 'MOG') {
-    var hfn = getTime(/<lt4:crs>HFN<[^<]+<lt4:st>([^<]+)</m);
-    message.KEY_TRAIN_TEXT = [depart,old,hhy,fpk,hfn].join(' ') + '\n' + [depart,old,hhy,fpk,hfn].join(' ');
-  } else {
-    var mor = getTime(/<lt4:crs>MOG<[^<]+<lt4:st>([^<]+)</m);
-    message.KEY_TRAIN_TEXT = [depart,fpk,hhy,old,mor].join(' ') + '\n' + [depart,fpk,hhy,old,mor].join(' ');
-  }
-
+  message.KEY_TRAIN_TEXT = soap.split('</lt4:service><lt4:service>')
+    .map(serviceToText)
+    .join('\n');
+  
   Pebble.sendAppMessage(message);
 }
 
 function getTrains(from, to) {
   var xhr = new XMLHttpRequest();
   xhr.onload = function() {
-    sendTrainTimes(from, this.responseText);
+    sendTrainTimes(from, xhr.responseText);
   };
   xhr.open('POST', 'https://lite.realtime.nationalrail.co.uk/OpenLDBWS/ldb8.asmx');
   xhr.setRequestHeader("Content-Type", "text/xml");
@@ -37,12 +54,11 @@ function getTrains(from, to) {
           '</typ:AccessToken>' +
        '</soapenv:Header>' +
        '<soapenv:Body>' +
-          '<ldb:GetFastestDeparturesWithDetailsRequest>' +
+          '<ldb:GetDepBoardWithDetailsRequest>' +
+             '<ldb:numRows>3</ldb:numRows>' +
              '<ldb:crs>' + from + '</ldb:crs>' +
-             '<ldb:filterList>' +
-                '<ldb:crs>' + to + '</ldb:crs>' +
-             '</ldb:filterList>' +
-          '</ldb:GetFastestDeparturesWithDetailsRequest>' +
+             '<ldb:filterCrs>' + to + '</ldb:filterCrs>' +
+          '</ldb:GetDepBoardWithDetailsRequest>' +
        '</soapenv:Body>' +
     '</soapenv:Envelope>';
   xhr.send(xml);

@@ -8,7 +8,7 @@ void create_health_layers(Layer* window_layer) {
   GRect bounds = layer_get_bounds(window_layer);
 
   s_steps_layer = text_layer_create(GRect(2, 88, bounds.size.w - 2, 26));
-  format_layer(s_steps_layer, FONT_KEY_GOTHIC_24, GTextAlignmentLeft);
+  format_layer(s_steps_layer, FONT_KEY_GOTHIC_18, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(s_steps_layer));
   
   update_health_layers(HealthEventSignificantUpdate, NULL);
