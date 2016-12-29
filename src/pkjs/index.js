@@ -6,6 +6,12 @@ Pebble uses https://github.com/phoboslab/Ejecta and appears to not support:
   /regex/g.exec
 */
 
+// Initialize config screen
+//var Clay = require('pebble-clay');
+//var clayConfig = require('./config');
+//var clay = new Clay(clayConfig);
+
+
 var MINUTE = 60000;
 
 function sendTrainTimes(from, soap) {
@@ -19,23 +25,24 @@ function sendTrainTimes(from, soap) {
     var old = getTime(/<lt4:crs>OLD<[^<]+<lt4:st>([^<]+)<[^<]+<lt4:et>([^<]+)</, 2);
     var hhy = getTime(/<lt4:crs>HHY<[^<]+<lt4:st>([^<]+)<[^<]+<lt4:et>([^<]+)</, 2);
     var fpk = getTime(/<lt4:crs>FPK<[^<]+<lt4:st>([^<]+)<[^<]+<lt4:et>([^<]+)</, 5);
+    var hfn, mog;
     if (from == 'HFN') {
-      var hfn = getTime(/<lt4:std>([^<]+)<[^<]+<lt4:etd>([^<]+)</, 5);
-      var mor = getTime(/<lt4:crs>MOG<[^<]+<lt4:st>([^<]+)<[^<]+<lt4:et>([^<]+)</, 2);
-      return [hfn,fpk,hhy,old,mor].join(' ');
+      hfn = getTime(/<lt4:std>([^<]+)<[^<]+<lt4:etd>([^<]+)</, 5);
+      mog = getTime(/<lt4:crs>MOG<[^<]+<lt4:st>([^<]+)<[^<]+<lt4:et>([^<]+)</, 2);
+      return [hfn,fpk,hhy,old,mog].join(' ');
     } else {
-      var mog = getTime(/<lt4:std>([^<]+)<[^<]+<lt4:etd>([^<]+)</, 5);
-      var hfn = getTime(/<lt4:crs>HFN<[^<]+<lt4:st>([^<]+)<[^<]+<lt4:et>([^<]+)</, 5);
+      mog = getTime(/<lt4:std>([^<]+)<[^<]+<lt4:etd>([^<]+)</, 5);
+      hfn = getTime(/<lt4:crs>HFN<[^<]+<lt4:st>([^<]+)<[^<]+<lt4:et>([^<]+)</, 5);
       return [mog,old,hhy,fpk,hfn].join(' ');
     }
   };
     
-  var message = {};
+  var message = {
+    'MSG_TRAIN_TEXT': soap.split('</lt4:service><lt4:service>')
+      .map(serviceToText)
+      .join('\n')
+  };
 
-  message.KEY_TRAIN_TEXT = soap.split('</lt4:service><lt4:service>')
-    .map(serviceToText)
-    .join('\n');
-  
   Pebble.sendAppMessage(message);
 }
 
@@ -50,7 +57,7 @@ function getTrains(from, to) {
     '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="http://thalesgroup.com/RTTI/2013-11-28/Token/types" xmlns:ldb="http://thalesgroup.com/RTTI/2015-11-27/ldb/">' +
        '<soapenv:Header>' +
           '<typ:AccessToken>' +
-             '<typ:TokenValue>####</typ:TokenValue>' +
+             '<typ:TokenValue>a12a8f08-2df8-4d77-b9cd-510f6d811419</typ:TokenValue>' +
           '</typ:AccessToken>' +
        '</soapenv:Header>' +
        '<soapenv:Body>' +

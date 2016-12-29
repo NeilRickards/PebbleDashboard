@@ -4,7 +4,7 @@
 
 #define NUM_INTL 3
 // TODO: daylight savings
-int s_intl_offsets[] = { -7, -4, 8 };  // Offsets from GMT
+int s_intl_offsets[] = { 0, -5, 8 };  // Offsets from GMT
 
 static TextLayer* s_time_layer;
 static TextLayer* s_date_layer;
@@ -43,7 +43,11 @@ static GColor get_color(int hour) {
     return GColorWhite;
   return GColorBlack;
 }
-
+/*
+void update_times_offsets(int offset0) {
+  s_intl_offsets[0] = offset0;
+}
+*/
 void update_times_layers(struct tm* tick_time) {
   // Write the time
   static char time_buffer[9];

@@ -4,12 +4,6 @@
 #include "health.h"
 #include "train.h"
 
-enum {
-  KEY_PIN0_TIME = 0,
-  KEY_PIN0_TEXT,
-  KEY_TRAIN_TEXT
-};
-
 static Window* s_main_window;
 
 static void main_window_load(Window* window) {
@@ -48,8 +42,11 @@ void update_layers(struct tm* tick_time, TimeUnits units_changed) {
 }
 
 static void inbox_received_callback(DictionaryIterator* iterator, void* context) {
-  Tuple* train_tuple = dict_find(iterator, KEY_TRAIN_TEXT);
+  Tuple* train_tuple = dict_find(iterator, MESSAGE_KEY_MSG_TRAIN_TEXT);
   update_train_layers(train_tuple->value->cstring);
+  
+//  Tuple* times_tuple = dict_find(iterator, MESSAGE_KEY_SETTING_TIME_OFFSET0);
+//  update_times_offsets(times_tuple->value->int32);
 }
 
 static void init() {

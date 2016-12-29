@@ -1,0 +1,40 @@
+{
+    "author": "neilrickards@gmail.com",
+    "dependencies": {},
+    "keywords": [],
+    "name": "dashboard",
+    "pebble": {
+        "capabilities": [
+            "location",
+            "health"
+        ],
+        "displayName": "Dashboard",
+        "enableMultiJS": true,
+        "messageKeys": [
+            "MSG_TRAIN_TEXT",
+            "SETTING_TIME_OFFSET0",
+            "SETTING_TIME_OFFSET1",
+            "SETTING_TIME_OFFSET2"
+        ],
+        "projectType": "native",
+        "resources": {
+            "media": [
+                {
+                    "file": "images/dashboard.png",
+                    "name": "MENU_IMAGE",
+                    "targetPlatforms": null,
+                    "type": "png"
+                }
+            ]
+        },
+        "sdkVersion": "3",
+        "targetPlatforms": [
+            "basalt"
+        ],
+        "uuid": "1857b69c-be6f-4a3b-99f5-d3f58e2b5147",
+        "watchapp": {
+            "watchface": true
+        }
+    },
+    "version": "1.0.0"
+}
