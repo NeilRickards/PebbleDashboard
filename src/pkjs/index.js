@@ -6,15 +6,16 @@ Pebble uses https://github.com/phoboslab/Ejecta and appears to not support:
   /regex/g.exec
 */
 
-// Initialize config screen
-//var Clay = require('pebble-clay');
-//var clayConfig = require('./config');
-//var clay = new Clay(clayConfig);
-
-
 var MINUTE = 60000;
 
+// Initialize config screen
+var Clay = require('pebble-clay');
+var clayConfig = require('./config');
+new Clay(clayConfig);
+
 function sendTrainTimes(from, soap) {
+  console.log("Recieved soap: " + soap);
+  
   var serviceToText = function(service) {
     var getTime = function(re, strLen) {
       var match = re.exec(service);
@@ -38,15 +39,15 @@ function sendTrainTimes(from, soap) {
   };
     
   var message = {
-    'MSG_TRAIN_TEXT': soap.split('</lt4:service><lt4:service>')
-      .map(serviceToText)
-      .join('\n')
+    'MSG_TRAIN_TEXT': soap.split('</lt4:service><lt4:service>').map(serviceToText).join('\n')
   };
 
+  console.log("Sending message: " + message['MSG_TRAIN_TEXT']);
   Pebble.sendAppMessage(message);
 }
 
 function getTrains(from, to) {
+  console.log("Requesting trains from " + from + " to " + to); 
   var xhr = new XMLHttpRequest();
   xhr.onload = function() {
     sendTrainTimes(from, xhr.responseText);
@@ -72,6 +73,7 @@ function getTrains(from, to) {
 }
 
 function gotLocation(pos) {
+  console.log("Got position: " + pos.coords.latitude); 
   if (pos.coords.latitude > 51.79) {  // Home
     getTrains('HFN', 'MOG');
   } else if (pos.coords.latitude > 51.57) {  // Travel
@@ -81,6 +83,7 @@ function gotLocation(pos) {
 }
 
 function sendUpdates(e) {
+  console.log("Getting position"); 
   navigator.geolocation.getCurrentPosition(gotLocation, null, {enableHighAccuracy: false, maximumAge: 9 * MINUTE, timeout: MINUTE});
 }
 

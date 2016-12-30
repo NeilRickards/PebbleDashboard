@@ -1,6 +1,4 @@
-#include <pebble.h>
-#include "train.h"
-#include "utilities.h"
+#include "main.h"
 
 static TextLayer* s_train_layer;
 

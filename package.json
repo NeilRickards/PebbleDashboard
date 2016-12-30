@@ -1,11 +1,14 @@
 {
     "author": "neilrickards@gmail.com",
-    "dependencies": {},
+    "dependencies": {
+        "pebble-clay": "^1.0.3"
+    },
     "keywords": [],
     "name": "dashboard",
     "pebble": {
         "capabilities": [
             "location",
+            "configurable",
             "health"
         ],
         "displayName": "Dashboard",
@@ -21,6 +24,7 @@
             "media": [
                 {
                     "file": "images/dashboard.png",
+                    "menuIcon": true,
                     "name": "MENU_IMAGE",
                     "targetPlatforms": null,
                     "type": "png"

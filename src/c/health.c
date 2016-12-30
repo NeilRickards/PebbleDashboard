@@ -1,6 +1,4 @@
-#include <pebble.h>
-#include "health.h"
-#include "utilities.h"
+#include "main.h"
 
 static TextLayer* s_steps_layer;
 
@@ -14,7 +12,7 @@ void create_health_layers(Layer* window_layer) {
   update_health_layers(HealthEventSignificantUpdate, NULL);
 }
 
-void update_health_layers(HealthEventType event, void *context) {
+void update_health_layers(HealthEventType event, void* context) {
   static char steps[16];
   snprintf(steps, sizeof(steps), "Steps: %d", (int)health_service_sum_today(HealthMetricStepCount));
   text_layer_set_text(s_steps_layer, steps);

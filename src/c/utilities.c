@@ -1,5 +1,4 @@
-#include <pebble.h>
-#include "utilities.h"
+#include "main.h"
 
 void format_layer(TextLayer* layer, const char* font, GTextAlignment alignment) {
   text_layer_set_background_color(layer, GColorClear);

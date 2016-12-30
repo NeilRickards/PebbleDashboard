@@ -1,10 +1,6 @@
-#include <pebble.h>
-#include "times.h"
-#include "utilities.h"
+#include "main.h"
 
 #define NUM_INTL 3
-// TODO: daylight savings
-int s_intl_offsets[] = { 0, -5, 8 };  // Offsets from GMT
 
 static TextLayer* s_time_layer;
 static TextLayer* s_date_layer;
@@ -31,9 +27,6 @@ void create_times_layers(Layer* window_layer) {
     format_layer(s_intl_layer[i], FONT_KEY_GOTHIC_24, GTextAlignmentCenter);
     layer_add_child(window_layer, text_layer_get_layer(s_intl_layer[i]));
   }
-  
-  time_t temp = time(NULL);
-  update_times_layers(localtime(&temp));
 }
 
 static GColor get_color(int hour) {
@@ -43,12 +36,8 @@ static GColor get_color(int hour) {
     return GColorWhite;
   return GColorBlack;
 }
-/*
-void update_times_offsets(int offset0) {
-  s_intl_offsets[0] = offset0;
-}
-*/
-void update_times_layers(struct tm* tick_time) {
+
+void update_times_layers(struct tm* tick_time, Settings* settings) {
   // Write the time
   static char time_buffer[9];
   strftime(time_buffer, sizeof(time_buffer), "%R", tick_time);
@@ -63,7 +52,7 @@ void update_times_layers(struct tm* tick_time) {
   time_t gmt = mktime(tick_time);
   static char intl_buffer[NUM_INTL][9];
   for (int i = 0; i < NUM_INTL; ++i) {
-    time_t local_time = gmt + s_intl_offsets[i] * SECONDS_PER_HOUR;
+    time_t local_time = gmt + settings->offsetTimesTen[i] * SECONDS_PER_HOUR / 10;
     struct tm* local_tm = gmtime(&local_time);
     
     strftime(intl_buffer[i], sizeof(intl_buffer[i]), "%R", local_tm);

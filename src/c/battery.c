@@ -1,5 +1,4 @@
-#include <pebble.h>
-#include "battery.h"
+#include "main.h"
 
 static Layer* s_output_layer;
 
